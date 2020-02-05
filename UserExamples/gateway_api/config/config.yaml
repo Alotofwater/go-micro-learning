@@ -1,0 +1,12 @@
+AppCfg:
+  Name: "gateway-api"
+  Version: "V0.001"
+CfgEtcd:
+  Addr:
+    - "127.0.0.1:2379"
+    - "127.0.0.1:2379"
+  User: ""
+  Passwd: ""
+  PathPrefix: "/gateway/config"
+Trace:
+  Addr: ""
