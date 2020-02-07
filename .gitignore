@@ -22,3 +22,4 @@ vendor/
 #!vendor/google.golang.org
 .cache
 *logs
+main

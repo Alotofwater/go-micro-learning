@@ -63,3 +63,35 @@ e,"master":"","nodes":""}}'
 etcdctl --endpoints='127.0.0.1:2380' put  /gateway/config/db_config '{"driver":"mysql","url":"root:qwe123a@tcp(127.0.0.1:23306)/cmdb_dome?charset=utf8&parseTime=true&loc=Local","
 enabled":true,"max_idle_connection":2,"max_open_connection":3}'
 ```  
+- prometheus
+
+配置文件
+```text
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+    scheme: http
+    timeout: 10s
+scrape_configs:
+  - job_name: APIGW
+    honor_timestamps: true
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+  - targets:
+    - 10.104.34.106:8080
+```
+启动命令
+```text
+prometheus （启动时依赖本机配置文件 /tmp/conf.yml , 可更改命令自定义路径）
+docker run --name prometheus -d -p 0.0.0.0:9090:9090 -v /Users/fred/application/data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+```
+

@@ -1,24 +1,28 @@
 package main
 
 import (
-	mcfg "go-micro-learning/UserExamples/user_service/config"
 	"fmt"
-	"go-micro-learning/UserExamples/basis_lib/configuration"
-	oti "go-micro-learning/UserExamples/basis_lib/tracer/opentracing"
-	"time"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
 	etcdCfg "github.com/micro/go-micro/config/source/etcd"
 	"github.com/micro/go-micro/registry"
 	etcdReg "github.com/micro/go-micro/registry/etcd"
-	"go-micro-learning/UserExamples/basis_lib/log"
+	"github.com/micro/go-plugins/wrapper/monitoring/prometheus"
+	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go-micro-learning/UserExamples/basis_lib"
+	"go-micro-learning/UserExamples/basis_lib/configuration"
+	"go-micro-learning/UserExamples/basis_lib/log"
 	tracer "go-micro-learning/UserExamples/basis_lib/tracer/jaeger"
+	oti "go-micro-learning/UserExamples/basis_lib/tracer/opentracing"
+	mcfg "go-micro-learning/UserExamples/user_service/config"
 	"go-micro-learning/UserExamples/user_service/handler"
+	mdlw "go-micro-learning/UserExamples/user_service/middleware"
 	"go-micro-learning/UserExamples/user_service/model"
 	s "go-micro-learning/UserExamples/user_service/proto/user"
-	mdlw "go-micro-learning/UserExamples/user_service/middleware"
-	"github.com/opentracing/opentracing-go"
+	"net/http"
+	"os"
+	"time"
 )
 
 var (
@@ -40,7 +44,6 @@ func main() {
 		log.Fatal("NewTracer err", err)
 	}
 	defer io.Close()
-	fmt.Println("t, io, err",t, io, err)
 	opentracing.SetGlobalTracer(t)
 	// 新建服务
 	service := micro.NewService(
@@ -50,9 +53,12 @@ func main() {
 		micro.RegisterInterval(time.Second*10),
 		micro.Registry(micReg),
 		micro.Version("latest"),
+
 		micro.WrapHandler(oti.NewGrpcHandlerWrapper(opentracing.GlobalTracer())),
-		micro.WrapHandler(mdlw.AccessLogHandlerWrapper()),
 		micro.WrapCall(oti.NewGrpcCallWrapper(opentracing.GlobalTracer())),
+		micro.WrapHandler(prometheus.NewHandlerWrapper()),
+		//micro.WrapHandler(mdlw.NewHandlerWrapper()),
+		micro.WrapHandler(mdlw.AccessLogHandlerWrapper()),
 	)
 
 
@@ -65,9 +71,12 @@ func main() {
 			handler.Init()
 		}),
 	)
-
+	//PrometheusBoot()
 	// 注册服务
-	s.RegisterUserHandler(service.Server(), new(handler.Service))
+	if err := s.RegisterUserHandler(service.Server(), new(handler.Service));err != nil{
+		fmt.Println(" 注册服务 失败  ", err)
+		os.Exit(1)
+	}
 
 	// 启动服务
 	if err := service.Run(); err != nil {
@@ -80,6 +89,16 @@ func registryOptions(ops *registry.Options) {
 }
 
 
+func PrometheusBoot(){
+	http.Handle("/metrics", promhttp.Handler())
+	// 启动web服务，监听8085端口
+	go func() {
+		err := http.ListenAndServe("0.0.0.0:8083", nil)
+		if err != nil {
+			log.Fatal("ListenAndServe: ", err)
+		}
+	}()
+}
 
 
 func initCfg(){
@@ -95,5 +114,6 @@ func initCfg(){
 		configuration.WithPathPrefix(fileCfg.CfgEtcd.PathPrefix),
 		configuration.WithSource(etcdSource),
 	)
+
 	log.Warn("所有加载完成")
 }

@@ -11,15 +11,14 @@ import (
 )
 
 // 日志
-type traceIdKey struct{}
-func FromJWTAuthWrapper()plugin.Handler{
+func AccessLogWrapper()plugin.Handler{
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			timeStart := time.Now()
 			db := sql_db.GetDB()
 			row,err := db.Query("select * from rbac_menu")
 			row.Close()
-			fmt.Println("FromJWTAuthWrapper",row,err)
+			fmt.Println("AccessLogWrapper",row,err)
 
 			// 状态码跟踪
 			sct := &statusCode.StatusCodeTracker{ResponseWriter: w, Status: http.StatusOK}

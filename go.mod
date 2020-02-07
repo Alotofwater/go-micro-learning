@@ -12,10 +12,9 @@ replace (
 )
 
 require (
-	github.com/Shopify/sarama v1.24.1 // indirect
+	github.com/VictoriaMetrics/metrics v1.10.0
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
-	github.com/anacrolix/sync v0.2.0 // indirect
 	github.com/armon/go-metrics v0.3.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/go-metrics v0.0.1 // indirect
@@ -34,16 +33,14 @@ require (
 	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/micro/cli v0.2.0
 	github.com/micro/go-micro v1.18.0
-	github.com/micro/go-plugins v1.4.0
+	github.com/micro/go-plugins v1.5.1
 	github.com/micro/micro v1.18.0
 	github.com/montanaflynn/stats v0.5.0 // indirect
 	github.com/nats-io/nkeys v0.1.2 // indirect
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pierrec/lz4 v2.3.0+incompatible // indirect
-	github.com/prometheus/common v0.7.0 // indirect
+	github.com/prometheus/client_golang v1.2.1
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
-	github.com/rs/cors v1.7.0 // indirect
-	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271 // indirect
 	github.com/uber/jaeger-client-go v2.20.1+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
 	go.uber.org/multierr v1.4.0 // indirect

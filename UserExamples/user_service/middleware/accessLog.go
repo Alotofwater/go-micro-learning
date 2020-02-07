@@ -1,4 +1,4 @@
-package common
+package middleware
 
 import (
 	"context"
@@ -13,6 +13,7 @@ func AccessLogHandlerWrapper() server.HandlerWrapper {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
 			timeStart := time.Now()
 
+			fmt.Println("zxczxc",)
 			err := h(ctx, req, rsp)
 			if err != nil {
 				return err

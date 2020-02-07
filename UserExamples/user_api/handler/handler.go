@@ -23,8 +23,11 @@ type Error struct {
 
 func Init() {
 	// 熔断配置
-	hystrix_go.DefaultVolumeThreshold = 1
-	hystrix_go.DefaultErrorPercentThreshold = 1
+	hystrix_go.DefaultVolumeThreshold = 10
+	hystrix_go.DefaultTimeout = 10000
+	hystrix_go.DefaultMaxConcurrent = 100
+	hystrix_go.DefaultErrorPercentThreshold = 30
+
 	cl := hystrix.NewClientWrapper()(client.DefaultClient)
 	serviceClient = us.NewUserService("go.micro.tc.user-service", cl)
 }
